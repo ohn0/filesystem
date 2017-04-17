@@ -9,4 +9,6 @@ int FS_getint();
 int FS_putint(unsigned int);
 int FS_putc(unsigned char);
 int FS_read();
+int FS_jump(int);
+int FS_getpos();
 #endif

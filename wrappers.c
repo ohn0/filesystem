@@ -16,7 +16,10 @@ int FS_setpos(struct entry* file_entry)
 
 int FS_reset(){rewind(FILESTREAM);}
 
-char FS_getc(){return fgetc(FILESTREAM);}
+char FS_getc(){
+	char c = fgetc(FILESTREAM);
+	return c;
+}
 int FS_getint()
 {
 	int a = FS_getc();
@@ -45,4 +48,14 @@ int FS_read(char* read_to, struct entry* file_entry)
 	int i = 0;
 	while((read_to[i++] = fgetc(FILESTREAM)) != EOF){;}
 	return 0;
+}
+
+int FS_jump(int jump_point)
+{
+	fseek(FILESTREAM, jump_point, SEEK_CUR);
+	return 0;
+}
+
+int FS_getpos(){
+	return ftell(FILESTREAM);
 }

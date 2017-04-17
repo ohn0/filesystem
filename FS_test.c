@@ -23,11 +23,12 @@ int main(int argc, char const *argv[])
 	rewind(FILESTREAM);
 	int size = 32 * 512;
 	printf("%d\n", add_to_file(&size));
-	//print_block(FILE_TABLE);
-	printf("%d", sizeof(time_t));
+	print_block(FILE_TABLE);
 	// char n[5]= "names";
 	struct index_entry* new_file = (struct index_entry*)create_entry("names");
-	printf("%d\n", new_file->last_mod_timestamp);
+	printf("Name mod time: %d\n", new_file->last_mod_timestamp);
+	int open_location = find_open_entry(DIRECTORY_INDEX);
+	printf("First open location: %d\n", open_location);
 	close(FILESTREAM);
 	return 0;
 }
