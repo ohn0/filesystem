@@ -17,17 +17,16 @@ int find_open_entry(int entry_point)
 //	FILESTREAM = entry_point;
 	int index_counter = 0;
 	char c = FS_getc();
-	while( c != 0x00 || c != 0xFF){
+	while(c != 0x00 && c != 0xFF){
 		printf("%X ",c);
 		if(index_counter++ % 20 == 0){
 			printf("\n");}
 		c = FS_getc();
 		FS_jump(20);
 		if(index_counter == 25){
-	//		return find_open_entry(FS_getpos());
 		}
 	}
-
+	printf("%X ", c);
 
 	return FS_getpos();
 	
