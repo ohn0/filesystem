@@ -1,12 +1,13 @@
 #include "file_table.h"
-int add_to_file(int * filesize)
+int* add_to_file(int * filesize)
 {
 	//Find filesize/512 blocks and make each point to the next.
 	FS_reset();
 	int num_blocks = ((*filesize)/BLOCK_SIZE);
 	int i,j,k;
 	i = j = k = 0;
-	int block_pos[num_blocks];
+	int* block_pos = (int*) malloc(sizeof(int) * num_blocks);
+	if(block_pos == NULL){return -1;}
 	while(i < num_blocks){
 		do{
 			j+=2;
@@ -25,7 +26,7 @@ int add_to_file(int * filesize)
 	// printf("\n");
 	fseek(FILESTREAM, block_pos[num_blocks-1], SEEK_SET);
 	FS_putint(~0);
-	return block_pos[0]/2;
+	return block_pos;
 }
 
 int write_to_table(int* a)
