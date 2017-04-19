@@ -14,20 +14,41 @@ int find_open_entry(int entry_point)
 {
 //Returns the location of the first zero entry within the directory index.
 	FS_reset();
-//	FILESTREAM = entry_point;
+	fseek(FILESTREAM, entry_point, SEEK_SET);
+	printf("%d\n", ftell(FILESTREAM));
 	int index_counter = 0;
-	char c = FS_getc();
+	char c = FS_peek(ftell(FILESTREAM));
 	while(c != 0x00 && c != 0xFF){
-		printf("%X ",c);
-		if(index_counter++ % 20 == 0){
-			printf("\n");}
-		c = FS_getc();
 		FS_jump(20);
+		c = FS_peek(ftell(FILESTREAM));
 		if(index_counter == 25){
 		}
 	}
-	printf("%X ", c);
-
 	return FS_getpos();
-	
+}
+
+int find_entry(char* entry_name, int entry_point)
+{
+	FS_reset();
+	FS_jump(entry_point);
+//	FS_jump(21);
+	char fileName[8]; int i;
+	for( i = 0; i < 8; i++){
+		fileName[i] = FS_getc();
+		printf("%X ", fileName[i]);
+	}
+	FS_jump(12);
+	printf("\n%X\n", FS_getc());
+
+}
+int update_index_entry(int new
+
+int write_entry(int entry_point,  char* entry){
+	int i;
+	for(i = 0; i < 20; i++){
+		printf("%X", entry[i]);
+		FS_putc(entry[i]);
+	}
+	printf("\n");
+	return 0;
 }

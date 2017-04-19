@@ -8,5 +8,5 @@ int update_index_entry(int, void*, int);
 int set_filename(struct index_entry*, char*);
 int add_file(void*, char*);
 int delete_entry(struct index_entry*, int);
-
+int write_entry(int, char*);
 #endif

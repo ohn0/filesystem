@@ -17,14 +17,17 @@ int FS_setpos(struct entry* file_entry)
 int FS_reset(){rewind(FILESTREAM);}
 
 char FS_getc(){
-	char c = fgetc(FILESTREAM);
-	return c;
+	return  fgetc(FILESTREAM);
 }
+
+	
+
 int FS_getint()
 {
 	int a = FS_getc();
 	int b = FS_getc();
 	return (b*256)+a;
+
 }
 
 int FS_putint(unsigned int val){
@@ -34,6 +37,13 @@ int FS_putint(unsigned int val){
 	FS_putc((unsigned char) (val >> 16));
 	FS_putc((unsigned char) val);
 	return 0;
+}
+
+char FS_peek(unsigned int point_loc)
+{
+	//Reads a byte and puts it back so the stream pointer never moved.
+	char c = FS_getc();
+	ungetc(c, FILESTREAM);
 }
 
 int FS_putc(unsigned char val){

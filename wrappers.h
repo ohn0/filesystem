@@ -7,6 +7,7 @@ int FS_reset();
 char FS_getc();
 int FS_getint();
 int FS_putint(unsigned int);
+char FS_peek(unsigned int);
 int FS_putc(unsigned char);
 int FS_read();
 int FS_jump(int);
