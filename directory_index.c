@@ -114,7 +114,7 @@ int add_file(void* data, char* filename, int datasize)
 	if(data == NULL){return -1;}
 	FS_reset();
 	int* data_blocks = add_to_file(&datasize);
-	int num_blocks = ceil(datasize/BLOCK_SIZE);
+	int num_blocks = ceil(((double)datasize)/BLOCK_SIZE);
 	int i;
 	struct index_entry* new_entry = create_entry(filename);
 	new_entry->size = datasize;
@@ -150,4 +150,41 @@ int write_block(char* data)
 	}
 	return 1;
 
+}
+
+char* read_block(int entry_point, int read_count)
+{
+	//Read read_count bytes beginning at entry_point into read_buf and return read_buf.
+	char* read_buf = (char*) malloc(sizeof(char) * read_count);
+	FS_reset();
+	FS_jump(entry_point);
+	int i;
+	for(i = 0; i < BLOCK_SIZE; i++){
+		read_buf[i] = FS_getc();
+	}
+	return read_buf;
+}
+
+int read_file(struct index_entry* entry){
+	FS_reset();
+	int start_block = entry->start_block_location;
+	int size = entry->size;
+	char read_buf[size];
+	char* block_buf;
+	int i, j;
+	int block_count = ceil(((double)size)/BLOCK_SIZE);
+	FS_jump(2 * start_block);
+	int block_chain[block_count];
+	for(i = 0; i < block_count; i++){
+		block_chain[i] = FS_getint();
+	}
+	for(i = 0; i < block_count; i++){
+		block_buf = read_block(BLOCK_SIZE * block_chain[i]);
+		size-=BLOCK_SIZE;
+		if(size < BLOCK_SIZE){
+			while(j % BLOCK_SIZE <= BLOCK_SIZE - 1){
+				read_bu;
+			}
+		}	
+	}
 }

@@ -28,8 +28,9 @@ int* add_to_file(int * filesize)
 	// printf("\n");
 	fseek(FILESTREAM, block_pos[num_blocks-1], SEEK_SET);
 	FS_putint(~0);
-	for(i = 0; i <= num_blocks; i++){
+	for(i = 0; i < num_blocks; i++){
 		block_pos[i] = block_pos[i]/2;
+		printf("Block: %d\n", block_pos[i]);
 	}
 	return block_pos;
 }

@@ -37,11 +37,9 @@ int main(int argc, char const *argv[])
 	FS_putint(0x00AB);
 	FS_putint(0x00AA);
 	FS_reset();
-	print_block(FILE_TABLE);
 	rewind(FILESTREAM);
 	FS_jump(0x200-1);
 	FS_putint(0xAA);
-	print_block(DIRECTORY_INDEX);
 	close(FILESTREAM);
 	close(test);
 	return 0;

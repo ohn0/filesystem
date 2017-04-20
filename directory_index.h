@@ -11,4 +11,6 @@ int add_file(void*, char*, int);
 int delete_entry(struct index_entry*, int);
 int write_entry(int, char*);
 int write_block(char*);
+char* read_block(int, int);
+int read_file(struct index_entry*);
 #endif
