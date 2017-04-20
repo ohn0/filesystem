@@ -21,26 +21,28 @@ int main(int argc, char const *argv[])
 {
 	printf("%d\n", sizeof(int));
 	FILESTREAM = fopen("FS10MB", "r+b");
+	FILE* test = fopen("test", "r");
+	int testSize = 0; int i = 0;
+	while(fgetc(test) != EOF){testSize++;}
+	printf("%d\n", testSize);
+	char* data_buf = (char*) malloc(testSize * sizeof(char));
+	rewind(test);
+	while((data_buf[i++] = fgetc(test)) != EOF){}
 	format();
-	rewind(FILESTREAM);
-	FS_jump(9);
-	FS_putint(0xFFFF);
 	FS_reset();
-	int size = 32 * 512;
-	printf("%d\n", add_to_file(&size));
+	FS_jump(9);
+	FS_putint(0xCCCC);
+	add_file(data_buf, "test", testSize);
+	rewind(FILESTREAM);
+	FS_putint(0x00AB);
+	FS_putint(0x00AA);
+	FS_reset();
 	print_block(FILE_TABLE);
-	char n[20];
-	int i;
-	for(i = 0; i < 20; i++){n[i] = i + 'A';}
-	struct index_entry* new_file = (struct index_entry*)create_entry("names");
-	printf("Name mod time: %d\n", new_file->last_mod_timestamp);
 	rewind(FILESTREAM);
 	FS_jump(0x200-1);
 	FS_putint(0xAA);
-	int open_location = find_open_entry(DIRECTORY_INDEX);
-	write_entry(open_location, n);
 	print_block(DIRECTORY_INDEX);
-	find_entry(n, DIRECTORY_INDEX);
 	close(FILESTREAM);
+	close(test);
 	return 0;
 }

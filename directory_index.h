@@ -7,7 +7,8 @@ int find_entry(char*, int);
 int populate_entry(struct index_entry*, int);
 int update_index_entry(int, void*, int);
 int set_filename(struct index_entry*, char*);
-int add_file(void*, char*);
+int add_file(void*, char*, int);
 int delete_entry(struct index_entry*, int);
 int write_entry(int, char*);
+int write_block(char*);
 #endif

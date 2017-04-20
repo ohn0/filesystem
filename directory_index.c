@@ -106,19 +106,26 @@ int set_filename(struct index_entry* entry, char* name)
 	return 0;
 }
 
-int add_file(void* data, char* filename)
+int add_file(void* data, char* filename, int datasize)
 {
 	//Allocate enough blocks to accomodate data's size.
 	// populate the entry in the directory index
 	//Write the contents of data into the blocks
 	if(data == NULL){return -1;}
-	int datasize = sizeof(data);
 	FS_reset();
-	int* data_blocks = add_to_file(datasize);
-	int num/*fuck*/_blocks = ceil(datasize/512);
+	int* data_blocks = add_to_file(&datasize);
+	int num_blocks = ceil(datasize/BLOCK_SIZE);
 	int i;
+	struct index_entry* new_entry = create_entry(filename);
+	new_entry->size = datasize;
+	new_entry->start_block_location = data_blocks[0];
+	int entry_location = find_open_entry(DIRECTORY_INDEX);
+	populate_entry(new_entry, entry_location);
 	for(i = 0; i < num_blocks; i++){
-
+		FS_reset();
+		FS_jump(data_blocks[i] * BLOCK_SIZE);
+		write_block(data);
+		data += BLOCK_SIZE;
 	}
 	
 }
@@ -133,4 +140,14 @@ int write_entry(int entry_point,  char* entry){
 	}
 	printf("\n");
 	return 0;
+}
+
+int write_block(char* data)
+{
+	int i;
+	for(i = 0; i < BLOCK_SIZE; i++){
+		FS_putc(data[i]);
+	}
+	return 1;
+
 }
