@@ -17,7 +17,6 @@ int delete_block_chain(int start_block)
 	FS_jump(2 * start_block);
 	int next_block = start_block;
 	while(next_block != 0xFFFF){
-		printf("%X\n", next_block);
 		FS_jump(2 * next_block);
 		next_block = FS_getMiniInt();
 		FS_jump(FS_getpos() - 2);

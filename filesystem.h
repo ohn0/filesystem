@@ -23,6 +23,7 @@ struct index_entry
 	int last_mod_timestamp;
 	int size;
 	int start_block_location;
+	int entry_location;
 };
 int format();
 extern FILE* FILESTREAM;

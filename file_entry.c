@@ -18,7 +18,10 @@ struct index_entry* create_entry(char* entry_name)
 
 int populate_entry_struct(struct index_entry* entry, int entry_point){
 	
+	//Go to the entry located at entry_point and write all of its
+	//information into the entry struct.
 	int i;
+	entry->entry_location = FS_getpos()+1;
 	for(i = 0; i <= FILENAME_LENGTH; i++){
 		entry->entry_name[i] = FS_getc();
 	}

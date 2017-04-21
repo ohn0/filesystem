@@ -19,7 +19,6 @@ int print_block(int start_block)
 }
 int main(int argc, char const *argv[])
 {
-	printf("%d\n", sizeof(int));
 	FILESTREAM = fopen("FS10MB", "r+b");
 	FILE* test = fopen("test", "r");
 	char max_file[8 * 4096];
@@ -44,14 +43,17 @@ int main(int argc, char const *argv[])
 	add_file(max_file, "really_big_file", 8 * 4096);
 	FS_reset();
 	struct index_entry* entry = find_entry("test_longname", DIRECTORY_INDEX);
+	printf("%d\n%d\n%d\n%d\n", entry->last_mod_timestamp, entry->start_block_location, entry->size, entry->entry_location );
 	if(entry == NULL){printf("null entry\n"); return 0;}
 	printf("%X\n", entry->last_mod_timestamp);
 	FS_reset();
 	char* buf = read_file(entry);
+	
 	for(i = 0; i < entry->size; i++){
 		printf("%c",buf[i]);
 	}
-	printf("\n");
+	delete_entry(entry);
+	print_block(DIRECTORY_INDEX);
 	close(FILESTREAM);
 	close(test);
 	return 0;
