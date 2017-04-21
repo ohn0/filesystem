@@ -30,16 +30,17 @@ int main(int argc, char const *argv[])
 	while((data_buf[i++] = fgetc(test)) != EOF){}
 	format();
 	FS_reset();
-	FS_jump(9);
-	FS_putint(0xCCCC);
-	add_file(data_buf, "test", testSize);
-	rewind(FILESTREAM);
-	FS_putint(0x00AB);
-	FS_putint(0x00AA);
+	FS_putMiniInt(0xBBBB);
+	FS_putMiniInt(0xAAAA);
+	FS_reset();
+	add_file(data_buf, "test_longname", testSize);
 	FS_reset();
 	rewind(FILESTREAM);
-	FS_jump(0x200-1);
-	FS_putint(0xAA);
+	struct index_entry* entry = find_entry("test_longname", DIRECTORY_INDEX);
+	if(entry == NULL){printf("null entry\n");}
+	printf("%X\n", entry->last_mod_timestamp);
+	FS_reset();
+	read_file(entry);
 	close(FILESTREAM);
 	close(test);
 	return 0;

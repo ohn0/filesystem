@@ -1,4 +1,5 @@
 #include "directory_index.h"
+
 struct index_entry* create_entry(char* entry_name)
 {
 	//Create a file_entry struct that we can later use to write into the
@@ -6,9 +7,13 @@ struct index_entry* create_entry(char* entry_name)
 	struct index_entry* new_entry =  malloc(sizeof(struct index_entry));
 	int i;
 	for(i = 0; i < FILENAME_LENGTH; i++){
+		new_entry->entry_name[i] = ' ';
+	}
+	for(i = 0; i < FILENAME_LENGTH && entry_name[i] != ' '; i++){
 		new_entry->entry_name[i] = entry_name[i];
 	}
 	new_entry->last_mod_timestamp = time(NULL);
+	printf("time size;%d\n", sizeof(new_entry->last_mod_timestamp));
 	return (struct index_entry*) new_entry;
 }
 
@@ -29,19 +34,40 @@ int find_open_entry(int entry_point)
 	return FS_getpos();
 }
 
-int find_entry(char* entry_name, int entry_point)
+struct index_entry* find_entry(char* entry_name, int entry_point)
 {
 	//Find an entry from the directory index that contains the same name.
+	struct index_entry* found_entry = (struct index_entry*) malloc(sizeof(struct index_entry));
 	FS_reset();
 	FS_jump(entry_point);
-	char fileName[8]; int i;
-	for( i = 0; i < 8; i++){
-		fileName[i] = FS_getc();
-		printf("%X ", fileName[i]);
+	char fileName[FILENAME_LENGTH]; int i;
+	int read_entries = 0;
+	while(read_entries++ < 20){
+		for( i = 0; i < FILENAME_LENGTH; i++){
+			fileName[i] = FS_getc();
+		}
+		if(compare_names(fileName, entry_name) == 1){
+			FS_jump(-12);
+			populate_entry_struct(found_entry, FS_getpos());
+			return found_entry;
+		}
+		FS_jump(12);
 	}
-	FS_jump(12);
-	printf("\n%X\n", FS_getc());
 
+	return NULL;
+
+}
+
+int populate_entry_struct(struct index_entry* entry, int entry_point){
+	
+	int i;
+	for(i = 0; i <= FILENAME_LENGTH; i++){
+		entry->entry_name[i] = FS_getc();
+	}
+	entry->last_mod_timestamp = FS_getint();
+	entry->size = FS_getint();
+	entry->start_block_location = FS_getint();
+	return 1;
 }
 
 int populate_entry(struct index_entry* new_entry, int entry_location)
@@ -119,6 +145,9 @@ int add_file(void* data, char* filename, int datasize)
 	struct index_entry* new_entry = create_entry(filename);
 	new_entry->size = datasize;
 	new_entry->start_block_location = data_blocks[0];
+	for(i = 0; i < FILENAME_LENGTH; i++){
+		printf("%c", new_entry->entry_name[i]);
+	}
 	int entry_location = find_open_entry(DIRECTORY_INDEX);
 	populate_entry(new_entry, entry_location);
 	for(i = 0; i < num_blocks; i++){
@@ -127,7 +156,7 @@ int add_file(void* data, char* filename, int datasize)
 		write_block(data);
 		data += BLOCK_SIZE;
 	}
-	
+	return 0;
 }
 
 
@@ -169,22 +198,29 @@ int read_file(struct index_entry* entry){
 	FS_reset();
 	int start_block = entry->start_block_location;
 	int size = entry->size;
-	char read_buf[size];
+	char read_buf[size] = (char*) malloc
+		;
 	char* block_buf;
-	int i, j;
+	int i, j, readI, blockI, readCount;
 	int block_count = ceil(((double)size)/BLOCK_SIZE);
 	FS_jump(2 * start_block);
 	int block_chain[block_count];
 	for(i = 0; i < block_count; i++){
 		block_chain[i] = FS_getint();
 	}
+	readI = blockI = 0;
 	for(i = 0; i < block_count; i++){
-		block_buf = read_block(BLOCK_SIZE * block_chain[i]);
-		size-=BLOCK_SIZE;
-		if(size < BLOCK_SIZE){
-			while(j % BLOCK_SIZE <= BLOCK_SIZE - 1){
-				read_bu;
-			}
-		}	
+		block_buf = read_block(BLOCK_SIZE * block_chain[i], BLOCK_SIZE);
+		if(size > BLOCK_SIZE){
+			readCount = BLOCK_SIZE;
+		}else{
+			readCount = size;
+		}
+		for(blockI = 0; blockI < readCount; blockI++){
+			read_buf[readI++] = block_buf[blockI];
+		}
+		free(block_buf);
 	}
+	return 0;
+	
 }

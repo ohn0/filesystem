@@ -22,20 +22,39 @@ char FS_getc(){
 
 	
 
-int FS_getint()
+unsigned int FS_getint()
 {
-	int a = FS_getc();
-	int b = FS_getc();
-	return (b*256)+a;
+	unsigned int a;
+	unsigned int val = 0; unsigned int i = 32;
+	while(i != 0){
+		i -= 8;
+		a = (unsigned char)FS_getc();
+		printf("A Val:%X\n", a << i);
+		val |= (a << i);
+	}
+	return val;
+}
 
+int FS_getMiniInt(){
+	int a = FS_getc();
+	return (256 * a) + FS_getc();
 }
 
 int FS_putint(unsigned int val){
 	// // fseek(FILESTREAM, -2, SEEK_CUR
 	// printf("%X " ,(unsigned char) (val >> 16));
 	// printf(" %X\n" ,(unsigned char) val);
-	FS_putc((unsigned char) (val >> 16));
-	FS_putc((unsigned char) val);
+	unsigned int int_size = 32;
+	while(int_size != 0){
+		int_size -= 8;
+		FS_putc(val >> int_size);
+	}
+	return 0;
+}
+
+int FS_putMiniInt(unsigned int val){
+	FS_putc(val >> 8);
+	FS_putc(val);
 	return 0;
 }
 
