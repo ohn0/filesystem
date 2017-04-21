@@ -29,7 +29,6 @@ unsigned int FS_getint()
 	while(i != 0){
 		i -= 8;
 		a = (unsigned char)FS_getc();
-		printf("A Val:%X\n", a << i);
 		val |= (a << i);
 	}
 	return val;

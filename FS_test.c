@@ -22,7 +22,12 @@ int main(int argc, char const *argv[])
 	printf("%d\n", sizeof(int));
 	FILESTREAM = fopen("FS10MB", "r+b");
 	FILE* test = fopen("test", "r");
+	char max_file[8 * 4096];
 	int testSize = 0; int i = 0;
+	for(i = 0; i < 8 * 4096; i++){
+		max_file[i] = 0xFF;
+	}
+	i = 0;
 	while(fgetc(test) != EOF){testSize++;}
 	printf("%d\n", testSize);
 	char* data_buf = (char*) malloc(testSize * sizeof(char));
@@ -32,15 +37,21 @@ int main(int argc, char const *argv[])
 	FS_reset();
 	FS_putMiniInt(0xBBBB);
 	FS_putMiniInt(0xAAAA);
+	FS_jump(8);
+	FS_putMiniInt(0xABCD);
 	FS_reset();
 	add_file(data_buf, "test_longname", testSize);
+	add_file(max_file, "really_big_file", 8 * 4096);
 	FS_reset();
-	rewind(FILESTREAM);
 	struct index_entry* entry = find_entry("test_longname", DIRECTORY_INDEX);
-	if(entry == NULL){printf("null entry\n");}
+	if(entry == NULL){printf("null entry\n"); return 0;}
 	printf("%X\n", entry->last_mod_timestamp);
 	FS_reset();
-	read_file(entry);
+	char* buf = read_file(entry);
+	for(i = 0; i < entry->size; i++){
+		printf("%c",buf[i]);
+	}
+	printf("\n");
 	close(FILESTREAM);
 	close(test);
 	return 0;

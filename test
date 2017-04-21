@@ -1,5 +1,6 @@
 directory_index.c
 directory_index.h
+file_entry.c
 file_entry.h
 filesystem.h
 file_table.c
@@ -8,6 +9,8 @@ format.c
 FS
 FS10MB
 FS_test.c
+helpers.c
+helpers.h
 makefile
 test
 wrappers.c

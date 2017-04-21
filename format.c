@@ -7,7 +7,7 @@ int format()
 	rewind(FILESTREAM);
 	fputc(0xAB, FILESTREAM);
 	int i = 0;
-	for(i = 0; i < 2048; i++){
+	for(i = 0; i < fileSize; i++){
 		fputc(0x00, FILESTREAM);
 	}
 	fseek(FILESTREAM, 510, SEEK_SET);

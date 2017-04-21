@@ -1,0 +1,19 @@
+total 9860
+-rw-r--r-- 1 neel neel     2074 Apr 21 07:56 directory_index.c
+-rw-r--r-- 1 neel neel      278 Apr 21 07:56 directory_index.h
+-rw-r--r-- 1 neel neel     3854 Apr 21 09:48 file_entry.c
+-rw-r--r-- 1 neel neel      384 Apr 21 09:52 file_entry.h
+-rw-r--r-- 1 neel neel      653 Apr 20 22:55 filesystem.h
+-rw-r--r-- 1 neel neel      818 Apr 21 09:52 file_table.c
+-rw-r--r-- 1 neel neel      172 Apr 21 07:56 file_table.h
+-rw-r--r-- 1 neel neel      359 Apr 21 10:03 format.c
+-rwxr-xr-x 1 neel neel    32432 Apr 21 10:03 FS
+-rw-r--r-- 1 neel neel 10000003 Apr 21 10:06 FS10MB
+-rw-r--r-- 1 neel neel     1289 Apr 21 10:03 FS_test.c
+-rw-r--r-- 1 neel neel      169 Apr 20 19:24 helpers.c
+-rw-r--r-- 1 neel neel      104 Apr 20 18:36 helpers.h
+-rw-r--r-- 1 neel neel      273 Apr 21 07:56 makefile
+-rw-r--r-- 1 neel neel      186 Apr 21 10:06 test
+-rw-r--r-- 1 neel neel        0 Apr 21 10:07 test2
+-rw-r--r-- 1 neel neel     1664 Apr 21 08:36 wrappers.c
+-rw-r--r-- 1 neel neel      345 Apr 20 22:38 wrappers.h
