@@ -1,3 +1,5 @@
+delete.c
+delete.h
 directory_index.c
 directory_index.h
 file_entry.c
@@ -13,5 +15,7 @@ helpers.c
 helpers.h
 makefile
 test
+test2
+wc
 wrappers.c
 wrappers.h

@@ -29,7 +29,12 @@ int* add_to_file(int * filesize)
 	return block_pos;
 }
 
-int write_to_table(int* a)
+int find_new_table()
 {
-	return 1;
+	FS_reset();
+	int i = 0;
+	while(FS_peek(FS_getpos()) == 0x00){
+		FS_jump(BLOCK_SIZE);
+	}
+	return FS_getpos();
 }

@@ -16,7 +16,7 @@ int FS_setpos(struct entry* file_entry)
 
 int FS_reset(){rewind(FILESTREAM);}
 
-char FS_getc(){
+unsigned char FS_getc(){
 	return  fgetc(FILESTREAM);
 }
 
@@ -34,9 +34,10 @@ unsigned int FS_getint()
 	return val;
 }
 
-int FS_getMiniInt(){
+unsigned int FS_getMiniInt(){
 	int a = FS_getc();
-	return (256 * a) + FS_getc();
+	int b = FS_getc();
+	return (256 * a) + b;
 }
 
 int FS_putint(unsigned int val){

@@ -4,7 +4,7 @@
 int FS_write(char*, struct entry*);
 int FS_setpos(struct entry*);
 int FS_reset();
-char FS_getc();
+unsigned char FS_getc();
 unsigned int FS_getint();
 int FS_putint(unsigned int);
 char FS_peek(unsigned int);

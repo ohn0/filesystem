@@ -30,13 +30,15 @@ struct index_entry* find_entry(char* entry_name, int entry_point)
 	while(read_entries++ < 20){
 		for( i = 0; i < FILENAME_LENGTH; i++){
 			fileName[i] = FS_getc();
+			printf("%c", fileName[i]);
 		}
 		if(compare_names(fileName, entry_name) == 1){
 			FS_jump(-12);
 			populate_entry_struct(found_entry, FS_getpos());
+			
 			return found_entry;
 		}
-		FS_jump(12);
+		FS_jump(9);
 	}
 
 	return NULL;

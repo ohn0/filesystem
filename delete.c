@@ -13,17 +13,28 @@ int delete_entry(struct index_entry* entry)
 
 int delete_block_chain(int start_block)
 {
+	//Beginning at start block, walk through the block chain until
+	//0xFFFF is encountered while deleting any encountered
+	//file blocks.
+	FS_reset(); int i = 0;
+	printf("Starting block: %X\n", BLOCK_SIZE * start_block);
+	FS_jump(2 * start_block);
+	unsigned int next_block = FS_getMiniInt();
+	delete_block_contents(start_block * BLOCK_SIZE);
+	int fpos;
+	while(next_block != 0xFFFF){
+		delete_block_contents(next_block * BLOCK_SIZE);
+		FS_reset();
+		FS_jump((2 * next_block));
+		next_block = FS_getMiniInt();
+		fpos = FS_getpos();
+		FS_reset();
+		FS_jump(fpos - 2);
+		FS_putMiniInt(0x0000);
+	}
 	FS_reset();
 	FS_jump(2 * start_block);
-	int next_block = start_block;
-	while(next_block != 0xFFFF){
-		FS_jump(2 * next_block);
-		next_block = FS_getMiniInt();
-		FS_jump(FS_getpos() - 2);
-		FS_putMiniInt(0x0000);
-		delete_block_contents(start_block * BLOCK_SIZE);
-		start_block = next_block;
-	}
+	FS_putMiniInt(0x0000);
 	return 0;
 
 }
@@ -31,6 +42,7 @@ int delete_block_chain(int start_block)
 int delete_block_contents(int start_block)
 {
 	int i;
+	FS_reset();
 	FS_jump(start_block);
 	for(i = 0; i < BLOCK_SIZE; i++){ 
 		FS_putc(0x00);
