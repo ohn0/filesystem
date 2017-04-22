@@ -29,7 +29,8 @@ int populate_entry_struct(struct index_entry* entry, int entry_point){
 	unsigned int size_loc = FS_getint();
 	entry->start_block_location = (size_loc >> 16);
 	entry->size = (size_loc << 16) >> 16;
-//	entry->size = FS_getint();
+	entry->entry_index_location = entry_point;
+	//	entry->size = FS_getint();
 //	entry->start_block_location = FS_getint();
 	return 1;
 }
@@ -79,13 +80,13 @@ int add_file(void* data, char* filename, int datasize)
 	new_entry->size = datasize;
 	new_entry->start_block_location = data_blocks[0];
 	for(i = 0; i < FILENAME_LENGTH; i++){
-		printf("%c", new_entry->entry_name[i]);
+	//	printf("%c", new_entry->entry_name[i]);
 	}
 	int entry_location = find_open_entry(DIRECTORY_INDEX);
 	populate_entry(new_entry, entry_location);
 	for(i = 0; i < num_blocks; i++){
 		FS_reset();
-		FS_jump(data_blocks[i] * BLOCK_SIZE);
+		FS_jump(BLOCK_SIZE * (data_blocks[i] + virtual_offset));
 		if(datasize > BLOCK_SIZE){
 			datasize-= BLOCK_SIZE;
 			write_block(data, BLOCK_SIZE);
@@ -95,6 +96,8 @@ int add_file(void* data, char* filename, int datasize)
 		}
 		data += BLOCK_SIZE;
 	}
+	free(new_entry);
+	free(data_blocks);
 	return 0;
 }
 
@@ -141,10 +144,10 @@ char* read_file(struct index_entry* entry){
 	for(i = 0; i < block_count; i++){
 
 		if(size > BLOCK_SIZE){
-			block_buf = read_block(BLOCK_SIZE * block_chain[i], BLOCK_SIZE);
+			block_buf = read_block((block_chain[i] + virtual_offset) * BLOCK_SIZE, BLOCK_SIZE);
 			readCount = BLOCK_SIZE;
 		}else{
-			block_buf = read_block(BLOCK_SIZE * block_chain[i],size);
+			block_buf = read_block((block_chain[i] + virtual_offset) * BLOCK_SIZE,size);
 			readCount = size;
 		}
 		for(blockI = 0; blockI < readCount; blockI++){

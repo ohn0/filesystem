@@ -7,7 +7,7 @@ int* add_to_file(int * filesize)
 	int i,j,k;
 	i = j = k = 0;
 	int* block_pos = (int*) malloc(sizeof(int) * num_blocks);
-	FS_jump(4);
+	FS_jump(2);
 	if(block_pos == NULL){return -1;}
 	while(i < num_blocks){
 		do{
@@ -29,12 +29,4 @@ int* add_to_file(int * filesize)
 	return block_pos;
 }
 
-int find_new_table()
-{
-	FS_reset();
-	int i = 0;
-	while(FS_peek(FS_getpos()) == 0x00){
-		FS_jump(BLOCK_SIZE);
-	}
-	return FS_getpos();
-}
+
