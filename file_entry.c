@@ -13,7 +13,7 @@ struct index_entry* create_entry(char* entry_name)
 	}
 	new_entry->last_mod_timestamp = time(NULL);
 	printf("time size;%d\n", sizeof(new_entry->last_mod_timestamp));
-	return (struct index_entry*) new_entry;
+	return  new_entry;
 }
 
 int populate_entry_struct(struct index_entry* entry, int entry_point){
@@ -84,18 +84,19 @@ int add_file(void* data, char* filename, int datasize)
 	}
 	int entry_location = find_open_entry(DIRECTORY_INDEX);
 	populate_entry(new_entry, entry_location);
-	for(i = 0; i < num_blocks; i++){
-		FS_reset();
-		FS_jump(BLOCK_SIZE * (data_blocks[i] + virtual_offset));
-		if(datasize > BLOCK_SIZE){
-			datasize-= BLOCK_SIZE;
-			write_block(data, BLOCK_SIZE);
-		}
-		else{
-			write_block(data, datasize);
-		}
-		data += BLOCK_SIZE;
-	}
+	write_to_disk(data_blocks, new_entry, datasize, data);
+//	for(i = 0; i < num_blocks; i++){
+//		FS_reset();
+//		FS_jump(BLOCK_SIZE * (data_blocks[i] + virtual_offset));
+//		if(datasize > BLOCK_SIZE){
+//			datasize-= BLOCK_SIZE;
+//			write_block(data, BLOCK_SIZE);
+//		}
+//		else{
+//			write_block(data, datasize);
+//		}
+//		data += BLOCK_SIZE;
+//	}
 	free(new_entry);
 	free(data_blocks);
 	return 0;
@@ -127,6 +128,7 @@ char* read_file(struct index_entry* entry){
 	FS_reset();
 	int start_block = entry->start_block_location;
 	int size = entry->size;
+	printf("READ SIZE: %X", size);
 	char* read_buf = (char*) malloc(size * sizeof(char));
 	char* block_buf;
 	int i, j, readI, blockI, readCount;

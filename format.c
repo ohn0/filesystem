@@ -12,8 +12,6 @@ int format()
 	}
 	FS_reset();
 	fseek(FILESTREAM, 510, SEEK_SET);
-	fputc(0xFF, FILESTREAM);
-	fputc(0xFF, FILESTREAM);
 	create_file_table();
 	create_directory_index();
 	return 0;

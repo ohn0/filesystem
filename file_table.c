@@ -4,6 +4,7 @@ int* add_to_file(int * filesize)
 	//Find filesize/512 blocks and make each point to the next.
 	FS_reset();
 	int num_blocks = ceil(((double)(*filesize))/BLOCK_SIZE);
+	printf("NUM BLOCKS: %d\n", num_blocks);
 	int i,j,k;
 	i = j = k = 0;
 	int* block_pos = (int*) malloc(sizeof(int) * num_blocks);
@@ -27,6 +28,21 @@ int* add_to_file(int * filesize)
 		FS_putMiniInt(block_pos[i+1]);
 	}
 	return block_pos;
+}
+
+int clear_blocks(int* blocks, int block_count)
+{	
+	int current_block = 0;
+	int i = 0;
+	unsigned int block = 0;
+	while(i < block_count){
+		FS_reset();
+		current_block = blocks[i];
+		FS_jump(2 * current_block);
+		FS_putMiniInt(0x0000);
+		i++;
+	}
+	return 0;
 }
 
 
