@@ -33,7 +33,9 @@ int write_file(void* data, struct index_entry* entry, int data_size)
 		file_blocks = add_to_file(&dSize);
 		write_to_disk(file_blocks, entry, data_size, data);
 	}
-
+	entry->last_mod_timestamp = time(NULL);
+	populate_entry(entry, entry->entry_location);
+	return 0;
 }
 
 int write_to_disk(int* blocks, struct index_entry* entry, int size, void* data)

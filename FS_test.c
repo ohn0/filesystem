@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
 	FILESTREAM = fopen("FS10MB", "r+b");
 	FILE* test = fopen("test", "r");
 	FILE* cent = fopen("50_cent.png", "r");
-	FILE* retrieval = fopen("retrieval.png", "a+b");
+	FILE* retrieval = fopen("retrieval.png", "w+b");
 	fseek(cent, 0L, SEEK_END);
 	int cent_size = ftell(cent);
 	char cent_buf[cent_size];
@@ -38,9 +38,7 @@ int main(int argc, char const *argv[])
 	char* sinclair  = "sinclair";
 	i = 0;
 	while(fgetc(test) != EOF){testSize++;}
-	while(i < cent_size){
-		cent_buf[i++] = fgetc(cent);
-	}
+
 	i = 0;
 	printf("%d\n", testSize);
 	char* data_buf = (char*) malloc(testSize * sizeof(char));
@@ -50,40 +48,52 @@ int main(int argc, char const *argv[])
 	FS_putMiniInt(0xAAAA);
 	FS_reset();
 	for( i= 0; i < 25; i++ ){
-		add_file(data_buf, "test_longname", testSize);
+		add_file(data_buf, "test_longname", testSize, ENTRY_TYPE_FILE);
 	}
-	add_file(max_file, "really_big_file", 8 * 4096);
-	add_file(cent_buf, "fifty_cent", cent_size);
+	add_file(max_file, "really_big_file", 8 * 4096, ENTRY_TYPE_DIR);
 	FS_reset();
 	struct index_entry* entry = find_entry("test_longname", DIRECTORY_INDEX);
-//	printf("%d\n%d\n%d\n%d\n", entry->last_mod_timestamp, entry->start_block_location, entry->size, entry->entry_location );
-	if(entry == NULL){printf("null entry\n"); return 0;}
+
+//	if(entry == NULL){printf("null entry\n"); return 0;}
 //	printf("%X\n", entry->last_mod_timestamp);
 	FS_reset();
-
 	entry = find_entry("really_big_file", DIRECTORY_INDEX);
+	printf("%d\n%d\n%d\n%X\n", entry->last_mod_timestamp, entry->start_block_location, entry->size, entry->entry_location );
+	printf("----\n");
 	write_file(sinclair, entry, 9);
-	char* buf = read_file(entry);
-	int bufSize = entry->size;
+	printf("%d\n%d\n%d\n%X\n", entry->last_mod_timestamp, entry->start_block_location, entry->size, entry->entry_location );
+	write_file(max_file, entry, 8 * 4096);
+	printf("----\n");
+	printf("%d\n%d\n%d\n%X\n", entry->last_mod_timestamp, entry->start_block_location, entry->size, entry->entry_location );
+	char* buf;// = read_file(entry);
+	int bufSize = 0;// = entry->size;
 	for(i = 0; i < 8 * 4096; i++){
 		max_file[i] = 0x01;
 	}
-	write_file(max_file, entry, 8 * 4096);
+//	write_file(max_file, entry, 8 * 4096);
 //	buf = read_file(entry);
 	for(i = 0; i<bufSize; i++){
-		printf("%c",buf[i]);
+//		printf("%c",buf[i]);
 	}
 //	delete_entry("really_big_file");
 //	entry = find_entry("really_big_file", DIRECTORY_INDEX);
 //	delete_entry(entry);
 	//	print_block(DIRECTORY_INDEX);
 	entry = find_entry("fifty_cent", DIRECTORY_INDEX);
-	buf = read_file(entry);
+//	char* sento = (char*) malloc(sizeof(char) * cent_size);
+	FS_reset();
+	FS_jump((1 + virtual_offset) * BLOCK_SIZE);
+
+	for(i = 0; i < 100; i++){
+	//	printf("%c ", buf[i]);
+	}
 	for(i = 0; i < cent_size; i++){
-		fputc(buf[i], retrieval);
+	//	fputc(buf[i], retrieval);
 	}
 	close(retrieval);
 	close(cent);
+	format();
+	create_root_dir();
 	close(FILESTREAM);
 	close(test);
 	return 0;

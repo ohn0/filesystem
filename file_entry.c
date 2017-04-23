@@ -8,11 +8,14 @@ struct index_entry* create_entry(char* entry_name)
 	for(i = 0; i < FILENAME_LENGTH; i++){
 		new_entry->entry_name[i] = ' ';
 	}
-	for(i = 0; i < FILENAME_LENGTH && entry_name[i] != ' '; i++){
+	for(i = 0; i < FILENAME_LENGTH ; i++){
 		new_entry->entry_name[i] = entry_name[i];
 	}
 	new_entry->last_mod_timestamp = time(NULL);
-	printf("time size;%d\n", sizeof(new_entry->last_mod_timestamp));
+	new_entry->size = 0;
+	new_entry->start_block_location = 0;
+	new_entry->entry_location = 0;
+	new_entry->entry_index_location = 0;
 	return  new_entry;
 }
 
@@ -30,6 +33,7 @@ int populate_entry_struct(struct index_entry* entry, int entry_point){
 	entry->start_block_location = (size_loc >> 16);
 	entry->size = (size_loc << 16) >> 16;
 	entry->entry_index_location = entry_point;
+	entry->entry_type = FS_getc();
 	//	entry->size = FS_getint();
 //	entry->start_block_location = FS_getint();
 	return 1;
@@ -47,7 +51,7 @@ int populate_entry(struct index_entry* new_entry, int entry_location)
 	}
 	FS_putint(new_entry->last_mod_timestamp);
 	int size_loc = ~0;
-	size_loc = size_loc & (new_entry->start_block_location << 16);
+	size_loc = size_loc & ((new_entry->start_block_location) << 16);
 	size_loc = size_loc | (new_entry->size);
 	FS_putint(size_loc);
 	//	FS_putint(new_entry->size);
@@ -66,7 +70,7 @@ int set_filename(struct index_entry* entry, char* name)
 	return 0;
 }
 
-int add_file(void* data, char* filename, int datasize)
+int add_file(void* data, char* filename, int datasize, int entry_type)
 {
 	//Allocate enough blocks to accomodate data's size.
 	// populate the entry in the directory index
@@ -84,6 +88,15 @@ int add_file(void* data, char* filename, int datasize)
 	}
 	int entry_location = find_open_entry(DIRECTORY_INDEX);
 	populate_entry(new_entry, entry_location);
+	if(entry_type == ENTRY_TYPE_DIR){
+		FS_putc('D');
+	}
+	else if(entry_type == ENTRY_TYPE_FILE){
+		FS_putc('F');
+	}
+	else{
+		printf("Invalid entry type.\n"); return -1;
+	}
 	write_to_disk(data_blocks, new_entry, datasize, data);
 //	for(i = 0; i < num_blocks; i++){
 //		FS_reset();

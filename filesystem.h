@@ -13,8 +13,10 @@
 #define ENTRY_LOCATION		0x04
 #define ADD			0x01
 #define REMOVE			0x02
-#define FILENAME_LENGTH 11
-#define DIR_INDEX_FULL_VAL 	0x19 //25
+#define FILENAME_LENGTH		 11
+#define DIR_INDEX_FULL_VAL	 25
+#define ENTRY_TYPE_DIR 		0x01
+#define ENTRY_TYPE_FILE		0x02
 struct entry{
 	int start_block;
 };
@@ -26,6 +28,7 @@ struct index_entry
 	int start_block_location;
 	int entry_location;
 	int entry_index_location;
+	int entry_type;
 };
 extern FILE* FILESTREAM;
 extern unsigned int fileSize;
