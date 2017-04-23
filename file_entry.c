@@ -4,12 +4,15 @@ struct index_entry* create_entry(char* entry_name)
 	//Create a file_entry struct that we can later use to write into the
 	//directory index on the disk.
 	struct index_entry* new_entry =  malloc(sizeof(struct index_entry));
-	int i;
+	int i, n;
 	for(i = 0; i < FILENAME_LENGTH; i++){
 		new_entry->entry_name[i] = ' ';
 	}
-	for(i = 0; i < FILENAME_LENGTH ; i++){
+	for(i = 0; i < FILENAME_LENGTH && entry_name[i] != '.'; i++){
 		new_entry->entry_name[i] = entry_name[i];
+	}i++;
+	for(n = 0; n < 3; n++){
+		new_entry->entry_name[8+n] = entry_name[i++]; 
 	}
 	new_entry->last_mod_timestamp = time(NULL);
 	new_entry->size = 0;

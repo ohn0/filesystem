@@ -17,6 +17,7 @@
 #define DIR_INDEX_FULL_VAL	 25
 #define ENTRY_TYPE_DIR 		0x01
 #define ENTRY_TYPE_FILE		0x02
+#define NEXT_DIR_INDEX		505
 struct entry{
 	int start_block;
 };
@@ -30,8 +31,15 @@ struct index_entry
 	int entry_index_location;
 	int entry_type;
 };
+struct directory_table
+{
+	struct index_entry* entry;
+	struct directory_table* next;	
+	char* data;
+};
 extern FILE* FILESTREAM;
 extern unsigned int fileSize;
 extern unsigned int virtual_offset;
 extern unsigned int DIRECTORY_INDEX;
+extern struct directory_table* entries;
 #endif

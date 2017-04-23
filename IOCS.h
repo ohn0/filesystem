@@ -3,6 +3,11 @@
 #include "filesystem.h"
 int create_root_dir();
 int generate_block_table();
+
+
+
+int fill_directory_table();
+
 struct block_table
 {
 	int start_block;

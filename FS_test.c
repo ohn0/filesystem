@@ -4,6 +4,7 @@ FILE* FILESTREAM;
 unsigned int fileSize;
 unsigned int virtual_offset;
 unsigned int DIRECTORY_INDEX;
+struct directory_table* entries;
 int print_block(int start_block)
 {
 	if(start_block % 512 != 0){printf("start_block not a multiple of 512.\n"); return -1;}
@@ -29,6 +30,7 @@ int main(int argc, char const *argv[])
 	char cent_buf[cent_size];
 	format();
 	create_file_table();
+	create_root_dir();
 	rewind(cent);
 	char max_file[8 * 4096];
 	int testSize = 0; int i = 0;
@@ -48,16 +50,16 @@ int main(int argc, char const *argv[])
 	FS_putMiniInt(0xAAAA);
 	FS_reset();
 	for( i= 0; i < 25; i++ ){
-		add_file(data_buf, "test_longname", testSize, ENTRY_TYPE_FILE);
+		add_file(data_buf, "long.z0x", testSize, ENTRY_TYPE_FILE);
 	}
-	add_file(max_file, "really_big_file", 8 * 4096, ENTRY_TYPE_DIR);
+	add_file(max_file, "big.q3w", 8 * 4096, ENTRY_TYPE_DIR);
 	FS_reset();
-	struct index_entry* entry = find_entry("test_longname", DIRECTORY_INDEX);
+	struct index_entry* entry = find_entry("long.z0x", DIRECTORY_INDEX);
 
 //	if(entry == NULL){printf("null entry\n"); return 0;}
 //	printf("%X\n", entry->last_mod_timestamp);
 	FS_reset();
-	entry = find_entry("really_big_file", DIRECTORY_INDEX);
+	entry = find_entry("big.q3w", DIRECTORY_INDEX);
 	printf("%d\n%d\n%d\n%X\n", entry->last_mod_timestamp, entry->start_block_location, entry->size, entry->entry_location );
 	printf("----\n");
 	write_file(sinclair, entry, 9);
@@ -92,8 +94,7 @@ int main(int argc, char const *argv[])
 	}
 	close(retrieval);
 	close(cent);
-	format();
-	create_root_dir();
+
 	close(FILESTREAM);
 	close(test);
 	return 0;

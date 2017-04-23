@@ -51,10 +51,13 @@ int entry_exists(char* name, int entry_point)
 	int i;
 	char fileName[FILENAME_LENGTH];
 	while(read_entries++ < 25){
+		printf("Checking entry.\n");
 		for( i = 0; i < FILENAME_LENGTH; i++ ){
 			fileName[i] = FS_getc();
+			printf("%c", fileName[i]);
 		}
-		if(compare_names(fileName, name) == 1){
+		printf("\n");
+		if(compare_names(name, fileName) == 1){
 			FS_jump(-12);
 			return 1;
 		}
