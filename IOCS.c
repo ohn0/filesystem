@@ -63,14 +63,52 @@ int generate_block_table()
 	return 0;
 }
 
-int create_file()
+int create_file(char* name, int size, void* buf, struct directory_table* parent, int entry_type)
 {
-
+//	add_file(parent->childList, add_file(buf, name, size, entry_type);
+	return 0;
 }
+
 
 int open_root()
 {
 	FS_reset();
-	struct index_entry* root = find_entry("ROOT", DIRECTORY_INDEX);
+//	struct index_entry* root = find_entry("ROOT", DIRECTORY_INDEX);
 	
+}
+
+int* open_dir(struct index_entry* dir)
+{
+	FS_reset();
+	FS_jump(dir->start_block_location);
+	int* child = (int*) malloc(25 * sizeof(char));
+		
+}
+
+int write_to_file(void* data, int data_size, struct children* child)
+{
+	int new_fileSize;
+	if(data_size < child->data->size){
+		new_fileSize = data_size;
+	}
+	else{
+		new_fileSize = data_size + child->data->size;
+	}
+	char* child_buf = child->file_buf;
+	char* updated_buf = (char*) malloc(new_fileSize * sizeof(char));
+	int i;
+	for(i = 0; i < new_fileSize; i++){
+		if(new_fileSize < child->data->size){
+			updated_buf[i] = data[i];
+		}
+		else{
+			if(i < child->data->size){
+				updated_buf[i] = child->file_buf[i];
+			}else{
+				updated_buf[i] = data[i - child->data->size];
+			}
+		}
+	}
+
+
 }

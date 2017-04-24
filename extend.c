@@ -9,7 +9,8 @@ int extend_directory_index(int entry_point)
 	int* new_index_location = add_to_file(&size);
 	FS_reset();
 	FS_jump(entry_point + 505);
-	FS_putMiniInt(((new_index_location[0] + virtual_offset) * BLOCK_SIZE));
+	//FS_putMiniInt(((new_index_location[0] + virtual_offset) * BLOCK_SIZE));
+	FS_putMiniInt(new_index_location[0]);
 	free(new_index_location);
 	return 0;
 }

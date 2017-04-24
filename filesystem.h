@@ -37,6 +37,18 @@ struct directory_table
 	struct directory_table* next;	
 	char* data;
 };
+struct parent_dir
+{
+	struct children* childList;
+};
+
+struct children
+{
+	struct children* next_child;
+	struct parent_dir* parent;
+	struct index_entry* data;
+	char* file_buf;
+};
 extern FILE* FILESTREAM;
 extern unsigned int fileSize;
 extern unsigned int virtual_offset;

@@ -4,7 +4,7 @@ FILE* FILESTREAM;
 unsigned int fileSize;
 unsigned int virtual_offset;
 unsigned int DIRECTORY_INDEX;
-struct directory_table* entries;
+struct directory_table* entries = NULL;
 int print_block(int start_block)
 {
 	if(start_block % 512 != 0){printf("start_block not a multiple of 512.\n"); return -1;}
@@ -42,7 +42,6 @@ int main(int argc, char const *argv[])
 	for( i= 0; i < 60; i++ ){
 		add_file(data_buf, "long.z0x", testSize, ENTRY_TYPE_FILE);
 	}
-	return 0;
 	add_file(max_file, "big.q3w", 8 * 4096, ENTRY_TYPE_DIR);
 	FS_reset();
 	struct index_entry* entry = find_entry("long.z0x", DIRECTORY_INDEX);
@@ -50,14 +49,28 @@ int main(int argc, char const *argv[])
 //	printf("%d\n%d\n%d\n%X\n", entry->last_mod_timestamp, entry->start_block_location, entry->size, entry->entry_location );
 //	printf("----\n");
 //	write_file(max_file, entry, 8 * 4096);
+	entry = find_entry("ROOT.ROT", DIRECTORY_INDEX);
+//	write_file("FF0F", entry, 4);
 	char* buf;// = read_file(entry);
+	buf = read_file(entry);
+	char concatBuf[40];
+	char* appendBuf = "FF0F";
+	for(i = 0; i < 9; i++){
+		if(i < entry->size){
+			concatBuf[i] = buf[i];
+		}
+		else{
+			concatBuf[i] = appendBuf[i - entry->size]; 
+		}
+	}
 	int bufSize = 0;// = entry->size;
 	for(i = 0; i < 8 * 4096; i++){
 		max_file[i] = 0x01;
 	}
+	write_file(concatBuf, entry, 9);
 	generate_block_table();
 	struct directory_table* entries_head = entries;
-	while(0){//entries->next != NULL){
+	while(entries->next != NULL){
 		for(i = 0; i < FILENAME_LENGTH; i++){
 			printf("%c", entries->entry->entry_name[i]);
 		}

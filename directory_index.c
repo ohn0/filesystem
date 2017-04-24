@@ -140,6 +140,6 @@ unsigned int get_next_dir_index(int entry_point)
 {
 	FS_reset();
 	FS_jump(entry_point + 505);
-	return FS_getMiniInt();
+	return (BLOCK_SIZE * (virtual_offset + FS_getMiniInt()));
 }
 
