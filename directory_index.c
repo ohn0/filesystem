@@ -19,6 +19,7 @@ int find_open_entry(int entry_point)
 		}
 		index_position = FS_getpos();
 		if(get_index_count(entry_point) == DIR_INDEX_FULL_VAL){
+			printf("POSITION: %X", FS_getpos());
 			extend_directory_index(entry_point);
 		}
 		return index_position;

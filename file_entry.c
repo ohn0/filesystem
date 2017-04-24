@@ -73,11 +73,13 @@ int set_filename(struct index_entry* entry, char* name)
 	return 0;
 }
 
-int add_file(void* data, char* filename, int datasize, int entry_type)
+struct index_entry* add_file(void* data, char* filename, int datasize, int entry_type)
 {
 	//Allocate enough blocks to accomodate data's size.
 	// populate the entry in the directory index
 	//Write the contents of data into the blocks
+	//Returns a pointer to that file's created struct, must
+	//be freed later.
 	if(data == NULL){return -1;}
 	FS_reset();
 	int* data_blocks = add_to_file(&datasize);
@@ -113,9 +115,8 @@ int add_file(void* data, char* filename, int datasize, int entry_type)
 //		}
 //		data += BLOCK_SIZE;
 //	}
-	free(new_entry);
 	free(data_blocks);
-	return 0;
+	return new_entry;
 }
 
 int write_block(char* data, int write_amount)
