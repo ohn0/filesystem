@@ -27,7 +27,9 @@ int main(int argc, char const *argv[]){
 	FS_reset();
 	char v[1];
 	v[0] = 'a';
+	print_block(0);
 	close(FILESTREAM);
+
 	return 0;
 
 }
@@ -95,7 +97,6 @@ int die()
 	for(i = 0; i < 100; i++){
 	//	printf("%c ", buf[i]);
 	}
-	close(retrieval);
 	close(FILESTREAM);
 	close(test);
 	return 0;

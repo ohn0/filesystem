@@ -10,6 +10,7 @@ int create_root_dir()
 	root_dir->child_count = 0;	
 //	struct index_entry* entry = find_entry("ROOT.ROT", DIRECTORY_INDEX);
 //	char* buf = read_file(entry);
+	//Resets the file table entry to 0x0000...
 	create_file("FIRST.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
 	int i;
 	for(i = 0; i < 5; i++){

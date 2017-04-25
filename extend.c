@@ -27,16 +27,19 @@ int write_file(void* data, struct index_entry* entry, int data_size)
 	if(entry->size < BLOCK_SIZE){eSize = 1;}
 	else{eSize = entry->size / BLOCK_SIZE;}
 	if(data_size != entry->size){
+		if((data_size / BLOCK_SIZE) != (entry->size / BLOCK_SIZE)){
+			clear_blocks(file_blocks, eSize);
+			free(file_blocks);
+			file_blocks = add_to_file(&dSize);
+		}
 		entry->size = data_size;
 		//entry->start_block_location = file_blocks[0];
-		clear_blocks(file_blocks, eSize);
-		free(file_blocks);
-		file_blocks = add_to_file(&dSize);
+
 		write_to_disk(file_blocks, entry, data_size, data);
 	}
 	entry->last_mod_timestamp = time(NULL);
 	//INVALID ENTRY POINT(no virtual_offset is set)
-	//	populate_entry(entry, entry->entry_location);
+	populate_entry(entry, entry->entry_location);
 	return 0;
 }
 
