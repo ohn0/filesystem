@@ -3,9 +3,14 @@ int create_root_dir()
 {
 	//Creates a root directory within the file system.
 	FS_reset();
-	add_file("hi :D", "ROOT.ROT", 5, ENTRY_TYPE_DIR);
+	struct open_dir* root_dir = (struct open_dir*) malloc(sizeof(struct open_dir));
+	root_dir->dir_entry = add_file("ROOT    DIR", "ROOT.DIR", FILENAME_LENGTH, ENTRY_TYPE_DIR);
+	root_dir->parent = NULL;
+	root_dir->child_list = NULL;
+	root_dir->child_count = 0;	
 //	struct index_entry* entry = find_entry("ROOT.ROT", DIRECTORY_INDEX);
 //	char* buf = read_file(entry);
+	create_file("FIRST.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
 	int i;
 	for(i = 0; i < 5; i++){
 //		printf("%c", buf[i]);
@@ -63,18 +68,69 @@ int generate_block_table()
 	return 0;
 }
 
-int create_file(char* name, int size, void* buf, struct directory_table* parent, int entry_type)
+int create_file(char* name, int size, void* buf, struct open_dir* parent, int entry_type)
 {
-//	add_file(parent->childList, add_file(buf, name, size, entry_type);
+	struct index_entry* new_file = add_file(buf, name, size, entry_type);
+	add_file_to_parent_dir(new_file, parent);
+	return 0;
+}
+
+int add_file_to_parent_dir(struct index_entry* new_file, struct open_dir* parent)
+{
+	struct children* child_iterator = parent->child_list;	
+	while(child_iterator != NULL){
+		child_iterator = child_iterator->next_child;
+	}
+	parent->child_count++;
+	child_iterator = (struct children*) malloc(sizeof(struct children));
+	child_iterator->next_child = NULL;
+	child_iterator->parent = parent;
+	child_iterator->data = new_file;
+	child_iterator->file_buf = read_file(new_file);
+	update_dir_on_disk(parent);
+	return 0;
+}
+
+int update_dir_on_disk(struct open_dir* parent)
+{
+	struct children* child_ite = parent->child_list;
+	int child_count = 0;
+	while(child_ite != NULL){
+		child_count++;
+		child_ite = child_ite->next_child;
+	}
+	child_ite = parent->child_list;
+	int i, j;
+	j = 0;
+	char* file_buf = (char*) malloc(sizeof(char) * (FILENAME_LENGTH * child_count));
+	while(child_ite != NULL){
+		for(i = 0; i < FILENAME_LENGTH; i++){
+			file_buf[j++] = child_ite->data->entry_name[i];
+		}
+		child_ite = child_ite->next_child;
+	}
+	write_file(file_buf, parent->dir_entry, FILENAME_LENGTH * child_count);
 	return 0;
 }
 
 
-int open_root()
+struct open_dir* open_directory(char* name, struct open_dir* parent)
 {
 	FS_reset();
-//	struct index_entry* root = find_entry("ROOT", DIRECTORY_INDEX);
-	
+	struct index_entry* dir_entry = find_entry(name,  DIRECTORY_INDEX);
+	printf("Displaying root's contents:\n");
+	//display_dir_entries(root);
+	struct open_dir* new_dir = (struct open_dir*) malloc(sizeof(struct open_dir));
+	new_dir->parent = parent;
+	new_dir->dir_entry = dir_entry;
+	parent->child_list = NULL;
+//	update_dir_contents(new_dir);
+}
+
+int update_dir(struct open_dir* dir)
+{
+//	reload_children();
+
 }
 
 int* open_dir(struct index_entry* dir)
@@ -85,7 +141,7 @@ int* open_dir(struct index_entry* dir)
 		
 }
 
-int write_to_file(void* data, int data_size, struct children* child)
+int write_to_file(char* data, int data_size, struct children* child)
 {
 	int new_fileSize;
 	if(data_size < child->data->size){
@@ -109,6 +165,9 @@ int write_to_file(void* data, int data_size, struct children* child)
 			}
 		}
 	}
+	free(child->file_buf);
+	child->file_buf = updated_buf;
+	return 0;
 
 
 }

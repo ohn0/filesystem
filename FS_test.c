@@ -19,7 +19,19 @@ int print_block(int start_block)
 	printf("\n");
 	return 0;
 }
-int main(int argc, char const *argv[])
+int main(int argc, char const *argv[]){
+	FILESTREAM = fopen("FS10MB", "r+b");
+	format();
+	create_root_dir();
+	FS_reset(); FS_putMiniInt(0xAAAA); FS_reset();
+	FS_reset();
+	char v[1];
+	v[0] = 'a';
+	close(FILESTREAM);
+	return 0;
+
+}
+int die()
 {
 	FILESTREAM = fopen("FS10MB", "r+b");
 	FILE* test = fopen("test", "r");
@@ -39,7 +51,7 @@ int main(int argc, char const *argv[])
 	while((data_buf[i++] = fgetc(test)) != EOF){}
 	FS_reset();
 	FS_putMiniInt(0xAAAA);
-	for( i= 0; i < 60; i++ ){
+	for( i= 0; i < 160; i++ ){
 		add_file(data_buf, "long.z0x", testSize, ENTRY_TYPE_FILE);
 	}
 	add_file(max_file, "big.q3w", 8 * 4096, ENTRY_TYPE_DIR);

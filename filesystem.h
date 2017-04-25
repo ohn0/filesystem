@@ -37,10 +37,14 @@ struct directory_table
 	struct directory_table* next;	
 	char* data;
 };
-struct parent_dir
+struct open_dir
 {
-	struct children* childList;
+	struct index_entry* dir_entry;
+	struct open_dir* parent;
+	struct children* child_list;
+	int child_count;
 };
+
 
 struct children
 {

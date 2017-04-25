@@ -35,7 +35,8 @@ int write_file(void* data, struct index_entry* entry, int data_size)
 		write_to_disk(file_blocks, entry, data_size, data);
 	}
 	entry->last_mod_timestamp = time(NULL);
-	populate_entry(entry, entry->entry_location);
+	//INVALID ENTRY POINT(no virtual_offset is set)
+	//	populate_entry(entry, entry->entry_location);
 	return 0;
 }
 
