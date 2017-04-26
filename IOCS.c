@@ -15,12 +15,16 @@ int create_root_dir()
 	create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
 	create_file("Synchro.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
 	int i;
+	for(i = 0; i < 30; i++){
+
+		create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
+	}
 	struct index_entry* a_dir = find_entry("Synchro.DIR", DIRECTORY_INDEX);
 	printf("%c", a_dir->entry_name[3]);
 	for(i = 0; i < 5; i++){
 //		printf("%c", buf[i]);
 	}
-	a_dir = find_entry("ROOT    DIR", DIRECTORY_INDEX);
+	a_dir = find_entry("ROOT.DIR", DIRECTORY_INDEX);
 	char* contents = read_file(a_dir);
 	printf("Printing root's contents!\n");
 	for(i = 0; contents[i] != -1; i++){
@@ -34,6 +38,8 @@ int create_root_dir()
 	//as the roots open_dir*.
 	return 0;
 }
+
+
 
 int create_file(char* name, int size, void* buf, struct open_dir* parent, int entry_type)
 {

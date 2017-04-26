@@ -31,6 +31,7 @@ struct index_entry* find_entry(char* entry_name, int entry_point)
 	//Find an entry from the directory index that contains the same name.
 
 	unsigned int next_dir = get_next_dir_index(entry_point);
+	printf("Nexxt dir: %d", next_dir);
 	if(entry_exists(entry_name, entry_point)){
 		struct index_entry* found_entry = (struct index_entry*) malloc(sizeof(struct index_entry));
 		populate_entry_struct(found_entry, FS_getpos());
@@ -140,6 +141,7 @@ unsigned int get_next_dir_index(int entry_point)
 {
 	FS_reset();
 	FS_jump(entry_point + 505);
-	return (BLOCK_SIZE * (virtual_offset + FS_getMiniInt()));
+	return FS_getMiniInt();
+	//	return (BLOCK_SIZE * (virtual_offset + FS_getMiniInt()));
 }
 
