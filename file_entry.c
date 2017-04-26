@@ -47,7 +47,7 @@ int populate_entry(struct index_entry* new_entry, int entry_location)
 	//Take the contents of new_entry and write them to the disk
 	//beginning at entry_location.
 	FS_reset();
-	FS_jump(BLOCK_SIZE* (virtual_offset + entry_location));
+	FS_jump(entry_location);
 	int i;
 	for(i = 0; i < FILENAME_LENGTH; i++){
 		FS_putc(new_entry->entry_name[i]);
@@ -93,6 +93,7 @@ struct index_entry* add_file(void* data, char* filename, int datasize, int entry
 	}
 	int entry_location = find_open_entry(DIRECTORY_INDEX);
 	populate_entry(new_entry, entry_location);
+	new_entry->entry_location = entry_location;
 	if(entry_type == ENTRY_TYPE_DIR){
 		FS_putc('D');
 	}

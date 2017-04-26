@@ -12,13 +12,94 @@ int create_root_dir()
 //	char* buf = read_file(entry);
 	//Resets the file table entry to 0x0000...
 	create_file("FIRST.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
+	create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
+	create_file("Synchro.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
 	int i;
+	struct index_entry* a_dir = find_entry("Synchro.DIR", DIRECTORY_INDEX);
+	printf("%c", a_dir->entry_name[3]);
 	for(i = 0; i < 5; i++){
 //		printf("%c", buf[i]);
 	}
+	a_dir = find_entry("ROOT    DIR", DIRECTORY_INDEX);
+	char* contents = read_file(a_dir);
+	printf("Printing root's contents!\n");
+	for(i = 0; contents[i] != -1; i++){
+		printf("%c", contents[i]);
+		if((i > 1) && ((i+1) % (FILENAME_LENGTH) == 0)){printf("\n");}
+	}
 	printf("\n");
+	//We can finally "create" a root directory.
+	//The next step is to enter one of it's children and
+	//allocate an open_dir* struct that has the same structure
+	//as the roots open_dir*.
 	return 0;
 }
+
+int create_file(char* name, int size, void* buf, struct open_dir* parent, int entry_type)
+{
+	struct index_entry* new_file = add_file(buf, name, size, entry_type);
+	add_file_to_parent_dir(new_file, parent);
+	return 0;
+}
+
+int add_file_to_parent_dir(struct index_entry* new_file, struct open_dir* parent)
+{
+	struct children* child_iterator = parent->child_list;	
+	struct children* cPrev=NULL;
+	while(child_iterator != NULL){
+		printf("GOing to next child..\n");
+		cPrev = child_iterator;
+		child_iterator = child_iterator->next_child;
+	}
+	parent->child_count++;
+	child_iterator = (struct children*) malloc(sizeof(struct children));
+	child_iterator->next_child = NULL;
+	child_iterator->parent = parent;
+	child_iterator->data = new_file;
+	printf("Child sizeX\n", child_iterator->data->size);
+	if(parent->child_list == NULL){
+		parent->child_list = child_iterator;
+	}
+	child_iterator->file_buf = read_file(new_file);
+	if(cPrev != NULL){
+		cPrev->next_child = child_iterator;
+	}
+	update_dir_on_disk(parent);
+	return 0;
+}
+
+int update_dir_on_disk(struct open_dir* parent)
+{
+	struct children* child_ite = parent->child_list;
+	int child_count = 0;
+	while(child_ite != NULL){
+		child_count++;
+		child_ite = child_ite->next_child;
+	}
+	child_ite = parent->child_list;
+	int i, j;
+	j = 0;
+	char* file_buf = (char*) malloc(1+ (sizeof(char) * (FILENAME_LENGTH * child_count)));
+	printf("printing chidlren.\n");
+	while(child_ite != NULL){
+		for(i = 0; i < FILENAME_LENGTH; i++){
+			file_buf[j++] = child_ite->data->entry_name[i];
+
+		}
+
+		child_ite = child_ite->next_child;
+	}
+	for(i = 0; i < FILENAME_LENGTH * child_count; i++){
+		printf("%c", file_buf[i]);
+	}
+	file_buf[i] = -1; 
+	printf("Children:%X\n", child_count);
+	printf("\n%X",FILENAME_LENGTH * child_count);
+	write_file(file_buf, parent->dir_entry,1+(FILENAME_LENGTH * child_count));
+	
+	return 0;
+}
+
 
 int generate_children(char* parentName)
 {
@@ -66,51 +147,6 @@ int generate_block_table()
 		}
 		local_dir = next_dir;
 	}while(next_dir != 0);	
-	return 0;
-}
-
-int create_file(char* name, int size, void* buf, struct open_dir* parent, int entry_type)
-{
-	struct index_entry* new_file = add_file(buf, name, size, entry_type);
-	add_file_to_parent_dir(new_file, parent);
-	return 0;
-}
-
-int add_file_to_parent_dir(struct index_entry* new_file, struct open_dir* parent)
-{
-	struct children* child_iterator = parent->child_list;	
-	while(child_iterator != NULL){
-		child_iterator = child_iterator->next_child;
-	}
-	parent->child_count++;
-	child_iterator = (struct children*) malloc(sizeof(struct children));
-	child_iterator->next_child = NULL;
-	child_iterator->parent = parent;
-	child_iterator->data = new_file;
-	child_iterator->file_buf = read_file(new_file);
-	update_dir_on_disk(parent);
-	return 0;
-}
-
-int update_dir_on_disk(struct open_dir* parent)
-{
-	struct children* child_ite = parent->child_list;
-	int child_count = 0;
-	while(child_ite != NULL){
-		child_count++;
-		child_ite = child_ite->next_child;
-	}
-	child_ite = parent->child_list;
-	int i, j;
-	j = 0;
-	char* file_buf = (char*) malloc(sizeof(char) * (FILENAME_LENGTH * child_count));
-	while(child_ite != NULL){
-		for(i = 0; i < FILENAME_LENGTH; i++){
-			file_buf[j++] = child_ite->data->entry_name[i];
-		}
-		child_ite = child_ite->next_child;
-	}
-	write_file(file_buf, parent->dir_entry, FILENAME_LENGTH * child_count);
 	return 0;
 }
 
@@ -169,6 +205,4 @@ int write_to_file(char* data, int data_size, struct children* child)
 	free(child->file_buf);
 	child->file_buf = updated_buf;
 	return 0;
-
-
 }
