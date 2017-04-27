@@ -28,15 +28,20 @@ int populate_entry_struct(struct index_entry* entry, int entry_point){
 	//information into the entry struct.
 	int i;
 	entry->entry_location = FS_getpos()+1;
+	FS_jump(1);
 	for(i = 0; i <= FILENAME_LENGTH; i++){
 		entry->entry_name[i] = FS_getc();
-	}
+	}FS_getc();
 	entry->last_mod_timestamp = FS_getint();
 	unsigned int size_loc = FS_getint();
 	entry->start_block_location = (size_loc >> 16);
 	entry->size = (size_loc << 16) >> 16;
 	entry->entry_index_location = entry_point;
+	printf("My pos:%X" ,FS_getpos());
+	FS_jump(-2);
 	entry->entry_type = FS_getc();
+	printf("%X", entry->size);
+	printf("TYPE:%c\n", entry->entry_type);
 	//	entry->size = FS_getint();
 //	entry->start_block_location = FS_getint();
 	return 1;

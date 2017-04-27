@@ -34,10 +34,10 @@ struct index_entry* find_entry(char* entry_name, int entry_point)
 	printf("Nexxt dir: %d", next_dir);
 	if(entry_exists(entry_name, entry_point)){
 		struct index_entry* found_entry = (struct index_entry*) malloc(sizeof(struct index_entry));
-		populate_entry_struct(found_entry, FS_getpos());
+		populate_entry_struct(found_entry, FS_getpos()-1);
 		return found_entry;
 	}
-	if(next_dir == 0x00){
+	else if (next_dir == 0x00){
 		return NULL;
 	}
 	else{
@@ -52,8 +52,8 @@ int entry_exists(char* name, int entry_point)
 	int read_entries = 0;
 	int i;
 	char fileName[FILENAME_LENGTH];
-	while(read_entries++ < 25){
-		printf("Checking entry.\n");
+	while(read_entries < 25){
+		printf("Checking entry.%d\n", read_entries);
 		for( i = 0; i < FILENAME_LENGTH; i++ ){
 			fileName[i] = FS_getc();
 			printf("%c", fileName[i]);
@@ -63,6 +63,7 @@ int entry_exists(char* name, int entry_point)
 			FS_jump(-12);
 			return 1;
 		}
+		read_entries++;
 		FS_jump(9);
 	}
 	return 0;	

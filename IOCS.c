@@ -17,27 +17,72 @@ int create_root_dir()
 	int i;
 	for(i = 0; i < 30; i++){
 
-		create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
+	//	create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
 	}
-	struct index_entry* a_dir = find_entry("Synchro.DIR", DIRECTORY_INDEX);
-	printf("%c", a_dir->entry_name[3]);
+	struct index_entry* a_dir = find_entry("FIRST.DIR", DIRECTORY_INDEX);
+	printf("FIRST %c\n", a_dir->entry_name[0]);
 	for(i = 0; i < 5; i++){
 //		printf("%c", buf[i]);
 	}
-	a_dir = find_entry("ROOT.DIR", DIRECTORY_INDEX);
+	a_dir = find_entry("FIRST.DIR  ", DIRECTORY_INDEX);
+	printf("THE FUCK");
+	for(i = 0; i < FILENAME_LENGTH; i++){
+		printf("%c", a_dir->entry_name[i]);
+	}
+	printf("\n%X\n", a_dir->entry_location);
+	printf("\n%c\n", a_dir->entry_type);
+	if(a_dir == NULL){
+		printf("File/Dir not found.\n"); return 0;
+	}
 	char* contents = read_file(a_dir);
 	printf("Printing root's contents!\n");
-	for(i = 0; contents[i] != -1; i++){
-		printf("%c", contents[i]);
-		if((i > 1) && ((i+1) % (FILENAME_LENGTH) == 0)){printf("\n");}
-	}
+//	for(i = 0; contents[i] != -1; i++){
+//		printf("%c", contents[i]);
+//		if((i > 1) && ((i+1) % (FILENAME_LENGTH) == 0)){printf("\n");}
+//	}
 	printf("\n");
+	open_dir(root_dir, "Synchro.DIR");
 	//We can finally "create" a root directory.
 	//The next step is to enter one of it's children and
 	//allocate an open_dir* struct that has the same structure
 	//as the roots open_dir*.
+	printf("%d", sizeof(int));
 	return 0;
 }
+
+
+int open_dir(struct open_dir* parent, char* dir_name)
+{
+	//Free the parent open_dir
+	//Create a pointer to all of the new dir's contents
+	//
+	struct children* child = parent->child_list;
+	int i; char new_name[FILENAME_LENGTH];
+	if(child == NULL){printf("No contents in current dir.\n");}
+	while(child->next_child != NULL && compare_names(dir_name, child->data->entry_name) == 0){
+		if(child->next_child == NULL){
+			printf("Dir does not exist here.\n");
+			return 0;
+		}
+		child = child->next_child;
+	}
+	for(i = 0; i < FILENAME_LENGTH; i++){
+		printf("%c", child->data->entry_name[i]);
+		new_name[i] = child->data->entry_name[i];
+	}
+	char* file_name = format_file_name(new_name);
+	struct index_entry* entry = find_entry(file_name, DIRECTORY_INDEX);
+	for(i = 0; i < FILENAME_LENGTH; i++){
+		printf("%c", entry->entry_name[i]);
+
+	}
+
+	//struct open_dir* 
+	return 0;
+}
+
+
+
 
 
 
@@ -105,7 +150,6 @@ int update_dir_on_disk(struct open_dir* parent)
 	
 	return 0;
 }
-
 
 int generate_children(char* parentName)
 {
@@ -176,13 +220,6 @@ int update_dir(struct open_dir* dir)
 
 }
 
-int* open_dir(struct index_entry* dir)
-{
-	FS_reset();
-	FS_jump(dir->start_block_location);
-	int* child = (int*) malloc(25 * sizeof(char));
-		
-}
 
 int write_to_file(char* data, int data_size, struct children* child)
 {
