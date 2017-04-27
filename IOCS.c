@@ -8,29 +8,44 @@ int create_root_dir()
 	root_dir->parent = NULL;
 	root_dir->child_list = NULL;
 	root_dir->child_count = 0;	
+
 //	struct index_entry* entry = find_entry("ROOT.ROT", DIRECTORY_INDEX);
 //	char* buf = read_file(entry);
 	//Resets the file table entry to 0x0000...
 	create_file("FIRST.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
-	create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
-	create_file("Synchro.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
-	int i;
-	for(i = 0; i < 30; i++){
 
-	//	create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
-	}
+//	create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
+//	create_file("Synchro.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
+	int i;
 	struct index_entry* a_dir = find_entry("FIRST.DIR", DIRECTORY_INDEX);
+	a_dir = find_entry("FIRST.DIR", DIRECTORY_INDEX);
+	char* buf = read_file(a_dir);
+	printf("dir size:%X\n", a_dir->size);
+	for(i = 0; i < a_dir->size; i++){
+		printf("%c", buf[i]);
+	}
+	for(i = 0; i < 30; i++){
+		create_file("SECOND.DIR", FILENAME_LENGTH, root_dir->dir_entry->entry_name,root_dir, ENTRY_TYPE_DIR);
+	}
+
 	printf("FIRST %c\n", a_dir->entry_name[0]);
 	for(i = 0; i < 5; i++){
 //		printf("%c", buf[i]);
 	}
-	a_dir = find_entry("FIRST.DIR  ", DIRECTORY_INDEX);
-	printf("THE FUCK");
+
+	a_dir = find_entry("ROOT.DIR", DIRECTORY_INDEX);
+	 buf = read_file(a_dir);
+	printf("dir size:%X\n", a_dir->size);
+	for(i = 0; i < a_dir->size - 1; i++){
+		printf("%c", buf[i]);
+	}
+	printf("\nread file\n");
 	for(i = 0; i < FILENAME_LENGTH; i++){
 		printf("%c", a_dir->entry_name[i]);
 	}
 	printf("\n%X\n", a_dir->entry_location);
 	printf("\n%c\n", a_dir->entry_type);
+	printf("\nSIZE:%X\n", a_dir->size);
 	if(a_dir == NULL){
 		printf("File/Dir not found.\n"); return 0;
 	}
@@ -41,7 +56,7 @@ int create_root_dir()
 //		if((i > 1) && ((i+1) % (FILENAME_LENGTH) == 0)){printf("\n");}
 //	}
 	printf("\n");
-	open_dir(root_dir, "Synchro.DIR");
+	open_dir(root_dir, "FIRST.DIR");
 	//We can finally "create" a root directory.
 	//The next step is to enter one of it's children and
 	//allocate an open_dir* struct that has the same structure
@@ -59,25 +74,37 @@ int open_dir(struct open_dir* parent, char* dir_name)
 	struct children* child = parent->child_list;
 	int i; char new_name[FILENAME_LENGTH];
 	if(child == NULL){printf("No contents in current dir.\n");}
-	while(child->next_child != NULL && compare_names(dir_name, child->data->entry_name) == 0){
-		if(child->next_child == NULL){
-			printf("Dir does not exist here.\n");
-			return 0;
-		}
+	while(child != NULL && compare_names(dir_name, child->data->entry_name) == 0){
+
 		child = child->next_child;
 	}
+	if(child== NULL){
+		printf("Dir does not exist here.\n");
+		return 0;
+	}
+
 	for(i = 0; i < FILENAME_LENGTH; i++){
 		printf("%c", child->data->entry_name[i]);
 		new_name[i] = child->data->entry_name[i];
 	}
 	char* file_name = format_file_name(new_name);
 	struct index_entry* entry = find_entry(file_name, DIRECTORY_INDEX);
+	printf("stuff going here\n");
 	for(i = 0; i < FILENAME_LENGTH; i++){
 		printf("%c", entry->entry_name[i]);
 
 	}
-
-	//struct open_dir* 
+	char* buf = read_file(entry);
+	printf("\n");
+	for(i = 0; i < entry->size; i++){
+		printf("%c", buf[i]);}
+	
+	struct open_dir* new_dir = (struct open_dir*) malloc(sizeof(struct open_dir));
+	new_dir->dir_entry = entry;
+	new_dir->parent = parent;
+	new_dir->child_list = (struct children*) malloc(sizeof(struct children));
+	new_dir->child_list->next_child = NULL;
+	
 	return 0;
 }
 
@@ -146,6 +173,7 @@ int update_dir_on_disk(struct open_dir* parent)
 	file_buf[i] = -1; 
 	printf("Children:%X\n", child_count);
 	printf("\n%X",FILENAME_LENGTH * child_count);
+	//-1 at the end to indicate EOF.
 	write_file(file_buf, parent->dir_entry,1+(FILENAME_LENGTH * child_count));
 	
 	return 0;

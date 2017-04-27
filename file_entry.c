@@ -31,16 +31,23 @@ int populate_entry_struct(struct index_entry* entry, int entry_point){
 	FS_jump(1);
 	for(i = 0; i <= FILENAME_LENGTH; i++){
 		entry->entry_name[i] = FS_getc();
-	}FS_getc();
+		//printf("%.2X ", FS_getc());
+	}//FS_getc();
+	//printf("\n%.2X\n%.2X\n", FS_getint(), FS_getint());
+
+
 	entry->last_mod_timestamp = FS_getint();
+	FS_jump(-1);
 	unsigned int size_loc = FS_getint();
+	printf("This is awful:%.8X\n", size_loc);
 	entry->start_block_location = (size_loc >> 16);
 	entry->size = (size_loc << 16) >> 16;
 	entry->entry_index_location = entry_point;
-	printf("My pos:%X" ,FS_getpos());
-	FS_jump(-2);
+	printf("My pos:%X\n" ,FS_getpos());
+	printf("Start block:%X\n", entry->start_block_location);
+	//FS_jump(-2);
 	entry->entry_type = FS_getc();
-	printf("%X", entry->size);
+	printf("My Size:%X", entry->size);
 	printf("TYPE:%c\n", entry->entry_type);
 	//	entry->size = FS_getint();
 //	entry->start_block_location = FS_getint();
@@ -58,9 +65,12 @@ int populate_entry(struct index_entry* new_entry, int entry_location)
 		FS_putc(new_entry->entry_name[i]);
 	}
 	FS_putint(new_entry->last_mod_timestamp);
-	int size_loc = ~0;
+	unsigned int size_loc = ~0;
+	printf("PE entry size:%X\n", new_entry->size);
+	printf("PE SB LOC:%X\N", new_entry->start_block_location);
 	size_loc = size_loc & ((new_entry->start_block_location) << 16);
 	size_loc = size_loc | (new_entry->size);
+	printf("size_loc %X\n", size_loc);
 	FS_putint(size_loc);
 	//	FS_putint(new_entry->size);
 //	FS_putint(new_entry->start_block_location);
@@ -93,10 +103,12 @@ struct index_entry* add_file(void* data, char* filename, int datasize, int entry
 	struct index_entry* new_entry = create_entry(filename);
 	new_entry->size = datasize;
 	new_entry->start_block_location = data_blocks[0];
+	printf("Start block:%X\n", data_blocks[0]);
 	for(i = 0; i < FILENAME_LENGTH; i++){
 	//	printf("%c", new_entry->entry_name[i]);
 	}
 	int entry_location = find_open_entry(DIRECTORY_INDEX);
+	printf("Entry Location:%X\n", entry_location);
 	populate_entry(new_entry, entry_location);
 	new_entry->entry_location = entry_location;
 	if(entry_type == ENTRY_TYPE_DIR){
