@@ -11,7 +11,7 @@ int find_open_entry(int entry_point)
 		int index_position;
 		update_index_count(entry_point, ADD);
 		FS_reset(); FS_jump(entry_point);
-		printf("%d\n", ftell(FILESTREAM));
+	//	printf("%d\n", ftell(FILESTREAM));
 		char c = FS_peek(ftell(FILESTREAM));
 		while(c != 0x00){
 			FS_jump(20);
@@ -19,7 +19,7 @@ int find_open_entry(int entry_point)
 		}
 		index_position = FS_getpos();
 		if(get_index_count(entry_point) == DIR_INDEX_FULL_VAL){
-			printf("POSITION: %X", FS_getpos());
+	//		printf("POSITION: %X", FS_getpos());
 			extend_directory_index(entry_point);
 		}
 		return index_position;
@@ -31,7 +31,7 @@ struct index_entry* find_entry(char* entry_name, int entry_point)
 	//Find an entry from the directory index that contains the same name.
 
 	unsigned int next_dir = get_next_dir_index(entry_point);
-	printf("Nexxt dir: %d", next_dir);
+	//printf("Nexxt dir: %d", next_dir);
 	if(entry_exists(entry_name, entry_point)){
 		struct index_entry* found_entry = (struct index_entry*) malloc(sizeof(struct index_entry));
 		populate_entry_struct(found_entry, FS_getpos()-1);
@@ -53,7 +53,7 @@ int entry_exists(char* name, int entry_point)
 	int i;
 	char fileName[FILENAME_LENGTH];
 	while(read_entries < 25){
-		printf("Checking entry.%d\n", read_entries);
+	//	printf("Checking entry.%d\n", read_entries);
 		for( i = 0; i < FILENAME_LENGTH; i++ ){
 			fileName[i] = FS_getc();
 			printf("%c", fileName[i]);

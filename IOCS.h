@@ -3,7 +3,7 @@
 #include "filesystem.h"
 int create_root_dir();
 int generate_block_table();
-
+struct open_dir* openDir(struct open_dir*, char*);
 
 int fill_directory_table();
 

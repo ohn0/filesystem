@@ -20,23 +20,42 @@ int compare_names(char* name, char* entry_name){
 
 char* format_file_name(char* name)
 {
-	char* new_name = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
+
 	int i, start;
-	for(i = 0; name[i] != ' '; i++){
-		new_name[i] = name[i];
+	printf("\n");
+	for(i = 0; i < FILENAME_LENGTH; i++){
+		printf("%X", name[i]);
 	}
-	new_name[i] = '.';
-	start = i+1;
-	for(;i != FILENAME_LENGTH; i++){
-		if(name[i] != ' '){
-			new_name[start++] = name[i];
+	printf("\n");
+	int new_size = 0;
+	for(i = 0; i < FILENAME_LENGTH; i++){
+		new_size++;
+		if(name[i] == ' '){
+			break;
 		}
 	}
-
-
-	for(i = 0; i != FILENAME_LENGTH; i++){
+	char* new_name = (char*) malloc(sizeof(char) *(new_size+3));
+	int nc = 0;
+	for(i = 0; name[i] != ' '; i++){
+		new_name[i] = name[nc++];
+	}
+	new_size+=3;
+	new_name[nc] = '.';
+	start = FILENAME_LENGTH -1;
+	new_name[new_size-1] = name[start--];
+	new_name[new_size-2] = name[start--];
+	new_name[new_size-3] = name[start--];
+	//	for(;i != FILENAME_LENGTH; i++){
+//		if(name[i] != ' '){
+//			new_name[start++] = name[i];
+	//	}
+//	}
+	
+	printf("Printing new name:\n");
+	for(i = 0; i != new_size; i++){
 		printf("%c", new_name[i]);
 	}
+	printf("\n");
 	return new_name;
 
 }

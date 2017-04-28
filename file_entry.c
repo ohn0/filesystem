@@ -162,9 +162,11 @@ char* read_block(int entry_point, int read_count){
 char* read_file(struct index_entry* entry){
 	FS_reset();
 	int start_block = entry->start_block_location;
+	printf("start block:%X", BLOCK_SIZE*(virtual_offset +start_block));
 	int size = entry->size;
 	printf("READ SIZE: %X", size);
-	char* read_buf = (char*) malloc(size * sizeof(char));
+	char* read_buf = (char*) malloc((1+size) * sizeof(char));
+	int max_size = size+1;
 	char* block_buf;
 	int i, j, readI, blockI, readCount;
 	int block_count = ceil(((double)size)/BLOCK_SIZE);
@@ -193,5 +195,6 @@ char* read_file(struct index_entry* entry){
 		free(block_buf);
 		size -= BLOCK_SIZE;
 	}
+	read_buf[max_size] = -1;
 	return read_buf;
 }
