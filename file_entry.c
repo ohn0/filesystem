@@ -29,6 +29,9 @@ int populate_entry_struct(struct index_entry* entry, int entry_point){
 	int i;
 	entry->entry_location = FS_getpos()+1;
 	FS_jump(1);
+	if(entry_point == -1){
+	//	FS_jump(-2);
+	}
 	for(i = 0; i <= FILENAME_LENGTH; i++){
 		entry->entry_name[i] = FS_getc();
 		//printf("%.2X ", FS_getc());
@@ -113,9 +116,11 @@ struct index_entry* add_file(void* data, char* filename, int datasize, int entry
 	new_entry->entry_location = entry_location;
 	if(entry_type == ENTRY_TYPE_DIR){
 		FS_putc('D');
+		new_entry->entry_type = 'D';
 	}
 	else if(entry_type == ENTRY_TYPE_FILE){
 		FS_putc('F');
+		new_entry->entry_type = 'F';
 	}
 	else{
 		printf("Invalid entry type.\n"); return -1;

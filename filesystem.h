@@ -18,6 +18,8 @@
 #define ENTRY_TYPE_DIR 		0x01
 #define ENTRY_TYPE_FILE		0x02
 #define NEXT_DIR_INDEX		505
+#define APPEND			0x01
+#define OVERWRITE		0x10
 struct entry{
 	int start_block;
 };
@@ -42,7 +44,7 @@ struct open_dir
 	struct index_entry* dir_entry;
 	struct open_dir* parent;
 	struct children* child_list;
-	int child_count;
+	//int child_count;
 };
 
 
@@ -52,10 +54,13 @@ struct children
 	struct parent_dir* parent;
 	struct index_entry* data;
 	char* file_buf;
+	int deleted;
 };
 extern FILE* FILESTREAM;
 extern unsigned int fileSize;
 extern unsigned int virtual_offset;
 extern unsigned int DIRECTORY_INDEX;
 extern struct directory_table* entries;
+extern struct open_dir* root_dir;
+extern struct index_entry* ROOT;
 #endif

@@ -5,6 +5,8 @@ unsigned int fileSize;
 unsigned int virtual_offset;
 unsigned int DIRECTORY_INDEX;
 struct directory_table* entries = NULL;
+struct open_dir* root_dir;
+struct index_entry* ROOT = NULL;
 int print_block(int start_block)
 {
 	if(start_block % 512 != 0){printf("start_block not a multiple of 512.\n"); return -1;}
@@ -25,12 +27,24 @@ int main(int argc, char const *argv[])
 {
 	FILESTREAM = fopen("FS10MB", "r+b");
 	format();
+	int c, i;
+	i = 0;
+	i = c = 0;
 	FS_reset(); FS_putMiniInt(0xAAAA);FS_reset();
-	create_root_dir();
-	FS_reset();
-	char v[1];
-	v[0] = 'a';
-//	print_block(0);
+	make_root();
+	
+	char* t1 = "Text file in root directory";
+	char* t2 = "Text file in sub-directory under root.";
+	struct index_entry* text_file = add_file(t1, "text1.txt", strlen(t1), ENTRY_TYPE_FILE);
+	addFile(text_file);
+	display_contents();
+	struct index_entry* sub_dir = add_file("DIR_", "sub.DIR", 4, ENTRY_TYPE_DIR);
+	open_dir("sub.DIR");
+	struct index_entry* text_fileB = add_file(t2, "text2.txt", strlen(t2), ENTRY_TYPE_FILE);
+	addFile(text_fileB);
+	display_contents();
+	delete_file("text2.txt");
+	display_contents();
 	close(FILESTREAM);
 
 	return 0;

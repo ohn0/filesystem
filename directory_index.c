@@ -35,7 +35,9 @@ struct index_entry* find_entry(char* entry_name, int entry_point)
 	if(entry_exists(entry_name, entry_point)){
 		struct index_entry* found_entry = (struct index_entry*) malloc(sizeof(struct index_entry));
 		populate_entry_struct(found_entry, FS_getpos()-1);
+		printf("Entry exists\n");
 		return found_entry;
+	
 	}
 	else if (next_dir == 0x00){
 		return NULL;

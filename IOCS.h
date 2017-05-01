@@ -18,5 +18,5 @@ struct block_table
 
 int create_file();
 int open_root();
-
+struct children* find_child(struct open_dir*, char*);
 #endif
